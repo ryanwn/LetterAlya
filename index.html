@@ -1,684 +1,1596 @@
-```html
 <!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-    <title>I Love You ❤️</title>
+    <title>For Alya ❤️</title>
 
     <style>
+      /* =========================================================
+   RESET
+========================================================= */
+
       * {
         margin: 0;
         padding: 0;
         box-sizing: border-box;
       }
 
+      html,
       body {
         width: 100%;
-        height: 100vh;
-        overflow: hidden;
-        font-family: "Poppins", Arial, sans-serif;
-        background: radial-gradient(
-          circle at center,
-          #3b1025 0%,
-          #170812 45%,
-          #080308 100%
-        );
-        color: white;
+        height: 100%;
       }
 
-      /* =========================
-           BACKGROUND
-        ========================= */
+      body {
+        min-height: 100vh;
+        overflow: hidden;
+        font-family: "Segoe UI", Arial, sans-serif;
+        color: #fff;
+        background: #08030a;
+        touch-action: pan-y;
+      }
 
-      .background {
+      /* =========================================================
+   AMBIENT BACKGROUND
+========================================================= */
+
+      .ambient {
         position: fixed;
         inset: 0;
         overflow: hidden;
         pointer-events: none;
+        z-index: 0;
       }
 
-      .glow {
+      .ambient::before {
+        content: "";
         position: absolute;
-        width: 500px;
-        height: 500px;
-        left: 50%;
-        top: 50%;
-        transform: translate(-50%, -50%);
-        background: #ff2f7d;
-        opacity: 0.12;
-        filter: blur(100px);
-        border-radius: 50%;
-        animation: glowPulse 3s ease-in-out infinite;
+        inset: -30%;
+        background:
+          radial-gradient(
+            circle at 50% 45%,
+            rgba(255, 70, 130, 0.18),
+            transparent 28%
+          ),
+          radial-gradient(
+            circle at 20% 20%,
+            rgba(180, 30, 90, 0.15),
+            transparent 30%
+          ),
+          radial-gradient(
+            circle at 80% 80%,
+            rgba(120, 20, 70, 0.15),
+            transparent 30%
+          );
+        animation: ambientMove 12s ease-in-out infinite alternate;
       }
 
-      @keyframes glowPulse {
+      @keyframes ambientMove {
+        from {
+          transform: scale(1) rotate(0deg);
+        }
+
+        to {
+          transform: scale(1.15) rotate(4deg);
+        }
+      }
+
+      /* =========================================================
+   STARS
+========================================================= */
+
+      #stars {
+        position: absolute;
+        inset: 0;
+      }
+
+      .star {
+        position: absolute;
+        width: 2px;
+        height: 2px;
+        background: #fff;
+        border-radius: 50%;
+        opacity: 0.4;
+        animation: twinkle 3s ease-in-out infinite;
+      }
+
+      @keyframes twinkle {
         0%,
         100% {
-          transform: translate(-50%, -50%) scale(0.9);
-          opacity: 0.08;
+          opacity: 0.15;
+          transform: scale(0.8);
         }
 
         50% {
-          transform: translate(-50%, -50%) scale(1.15);
-          opacity: 0.18;
+          opacity: 0.9;
+          transform: scale(1.5);
         }
       }
 
-      /* =========================
-           MAIN
-        ========================= */
+      /* =========================================================
+   SCENE
+========================================================= */
 
-      .container {
-        position: relative;
-        width: 100%;
-        height: 100vh;
+      .scene {
+        position: fixed;
+        inset: 0;
+        z-index: 2;
+
         display: flex;
         align-items: center;
         justify-content: center;
+
+        padding: 30px;
+
+        opacity: 1;
+        visibility: visible;
+
+        transition:
+          opacity 0.7s ease,
+          visibility 0.7s ease;
+      }
+
+      .scene.hidden {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+      }
+
+      .scene.active {
+        pointer-events: auto;
+      }
+
+      /* =========================================================
+   INTRO
+========================================================= */
+
+      .intro-content {
+        text-align: center;
+        max-width: 700px;
+        animation: fadeUp 1.2s ease forwards;
+      }
+
+      .intro-small {
+        font-size: 0.75rem;
+        letter-spacing: 5px;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.55);
+        margin-bottom: 25px;
+      }
+
+      .intro-title {
+        font-family: Georgia, serif;
+        font-size: clamp(4rem, 13vw, 9rem);
+        font-weight: 400;
+        line-height: 0.9;
+        letter-spacing: -5px;
+
+        background: linear-gradient(135deg, #fff, #ff9fc5, #ff4f91);
+
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+
+        text-shadow: 0 0 50px rgba(255, 60, 130, 0.2);
+      }
+
+      .intro-sub {
+        margin-top: 30px;
+        font-size: 1rem;
+        color: rgba(255, 255, 255, 0.65);
+        letter-spacing: 1px;
+      }
+
+      .open-btn {
+        margin-top: 40px;
+
+        padding: 15px 28px;
+
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        border-radius: 50px;
+
+        background: rgba(255, 255, 255, 0.06);
+        color: #fff;
+
+        font-size: 0.75rem;
+        letter-spacing: 3px;
+
+        cursor: pointer;
+
+        transition:
+          background 0.3s ease,
+          transform 0.3s ease,
+          border 0.3s ease;
+      }
+
+      .open-btn:hover {
+        background: rgba(255, 80, 140, 0.15);
+        border-color: rgba(255, 100, 160, 0.5);
+        transform: translateY(-3px);
+      }
+
+      /* =========================================================
+   ENVELOPE
+========================================================= */
+
+      .envelope-scene {
         flex-direction: column;
+      }
+
+      .envelope-wrap {
+        position: relative;
+        width: 320px;
+        height: 230px;
+        cursor: pointer;
+        perspective: 1000px;
+      }
+
+      .envelope {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+
+        width: 100%;
+        height: 180px;
+
+        background: linear-gradient(135deg, #48102b, #7b1746);
+
+        border-radius: 8px;
+
+        box-shadow:
+          0 30px 80px rgba(0, 0, 0, 0.5),
+          0 0 50px rgba(255, 50, 120, 0.12);
+
+        overflow: visible;
+      }
+
+      .flap {
+        position: absolute;
+        top: 0;
+        left: 0;
+
+        width: 100%;
+        height: 120px;
+
+        background: #8f2453;
+
+        clip-path: polygon(0 0, 50% 75%, 100% 0);
+
+        transform-origin: top center;
+
+        transition:
+          transform 1s cubic-bezier(0.65, 0, 0.35, 1),
+          z-index 0s 0s;
+
         z-index: 5;
       }
 
-      .hint {
-        position: absolute;
-        top: 13%;
-        font-size: 14px;
-        letter-spacing: 3px;
-        text-transform: uppercase;
-        opacity: 0.65;
-        animation: hintFloat 2s ease-in-out infinite;
+      .envelope-wrap.open .flap {
+        transform: rotateX(180deg);
+        z-index: 1;
       }
 
-      @keyframes hintFloat {
+      .letter {
+        position: absolute;
+
+        left: 50%;
+        bottom: 20px;
+
+        width: 270px;
+        height: 190px;
+
+        transform: translateX(-50%) translateY(0);
+
+        background: #fff8fb;
+        color: #5b1835;
+
+        border-radius: 5px;
+
+        text-align: center;
+
+        padding-top: 35px;
+
+        box-shadow: 0 15px 50px rgba(0, 0, 0, 0.3);
+
+        transition: transform 1s cubic-bezier(0.65, 0, 0.35, 1);
+
+        z-index: 3;
+      }
+
+      .envelope-wrap.open .letter {
+        transform: translateX(-50%) translateY(-125px);
+      }
+
+      .letter-small {
+        font-size: 0.65rem;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        opacity: 0.5;
+      }
+
+      .letter h2 {
+        font-family: Georgia, serif;
+        font-size: 2.4rem;
+        font-weight: 400;
+        margin: 8px 0;
+      }
+
+      .letter p {
+        font-size: 0.7rem;
+        opacity: 0.5;
+        letter-spacing: 2px;
+      }
+
+      .envelope-label {
+        position: absolute;
+
+        top: 250px;
+        left: 50%;
+
+        transform: translateX(-50%);
+
+        font-size: 0.7rem;
+        letter-spacing: 4px;
+        text-transform: uppercase;
+
+        color: rgba(255, 255, 255, 0.45);
+
+        white-space: nowrap;
+
+        transition: opacity 0.4s ease;
+      }
+
+      .envelope-wrap.open .envelope-label {
+        opacity: 0;
+      }
+
+      /* =========================================================
+   LETTER
+========================================================= */
+
+      .letter-content {
+        text-align: center;
+        max-width: 800px;
+      }
+
+      .eyebrow {
+        font-size: 0.7rem;
+        letter-spacing: 5px;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.45);
+        margin-bottom: 20px;
+      }
+
+      .big-name {
+        font-family: Georgia, serif;
+        font-size: clamp(4rem, 14vw, 10rem);
+        font-weight: 400;
+        letter-spacing: -5px;
+
+        background: linear-gradient(135deg, #fff, #ff9bc2, #ff3e85);
+
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+
+        line-height: 0.9;
+      }
+
+      .letter-line {
+        width: 80px;
+        height: 1px;
+
+        margin: 35px auto;
+
+        background: linear-gradient(90deg, transparent, #ff5d9b, transparent);
+      }
+
+      .letter-message {
+        font-family: Georgia, serif;
+        font-size: 1.15rem;
+        line-height: 2;
+        color: rgba(255, 255, 255, 0.72);
+      }
+
+      .next {
+        margin-top: 45px;
+
+        font-size: 0.65rem;
+        letter-spacing: 4px;
+        text-transform: uppercase;
+
+        color: rgba(255, 255, 255, 0.35);
+      }
+
+      /* =========================================================
+   MEMORIES
+========================================================= */
+
+      .memories-content {
+        width: min(1000px, 100%);
+        text-align: center;
+      }
+
+      .memories-title {
+        font-family: Georgia, serif;
+        font-size: clamp(2.5rem, 7vw, 5rem);
+        font-weight: 400;
+        margin-bottom: 15px;
+      }
+
+      .memories-sub {
+        color: rgba(255, 255, 255, 0.5);
+        font-size: 0.9rem;
+        margin-bottom: 45px;
+      }
+
+      .memory-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+      }
+
+      .memory-card {
+        position: relative;
+
+        padding: 40px 25px;
+
+        min-height: 230px;
+
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+
+        background: linear-gradient(
+          145deg,
+          rgba(255, 255, 255, 0.07),
+          rgba(255, 255, 255, 0.025)
+        );
+
+        border: 1px solid rgba(255, 255, 255, 0.1);
+
+        border-radius: 20px;
+
+        backdrop-filter: blur(15px);
+
+        transition:
+          transform 0.4s ease,
+          border 0.4s ease,
+          background 0.4s ease;
+      }
+
+      .memory-card:hover {
+        transform: translateY(-10px);
+
+        border-color: rgba(255, 90, 150, 0.4);
+
+        background: linear-gradient(
+          145deg,
+          rgba(255, 70, 130, 0.12),
+          rgba(255, 255, 255, 0.03)
+        );
+      }
+
+      .memory-icon {
+        font-size: 2rem;
+        margin-bottom: 20px;
+      }
+
+      .memory-card h3 {
+        font-family: Georgia, serif;
+        font-size: 1.4rem;
+        font-weight: 400;
+        margin-bottom: 10px;
+      }
+
+      .memory-card p {
+        color: rgba(255, 255, 255, 0.5);
+        font-size: 0.8rem;
+        line-height: 1.6;
+      }
+
+      /* =========================================================
+   CLIMAX
+========================================================= */
+
+      .climax-content {
+        text-align: center;
+      }
+
+      .climax-heart {
+        position: relative;
+
+        width: 90px;
+        height: 90px;
+
+        margin: 0 auto 50px;
+
+        background: #ff3d80;
+
+        transform: rotate(-45deg);
+
+        animation: heartBeat 1.5s ease-in-out infinite;
+
+        box-shadow:
+          0 0 50px rgba(255, 50, 120, 0.6),
+          0 0 100px rgba(255, 50, 120, 0.25);
+      }
+
+      .climax-heart::before,
+      .climax-heart::after {
+        content: "";
+
+        position: absolute;
+
+        width: 90px;
+        height: 90px;
+
+        background: #ff3d80;
+
+        border-radius: 50%;
+      }
+
+      .climax-heart::before {
+        top: -45px;
+        left: 0;
+      }
+
+      .climax-heart::after {
+        top: 0;
+        left: 45px;
+      }
+
+      @keyframes heartBeat {
+        0%,
+        100% {
+          transform: rotate(-45deg) scale(1);
+        }
+
+        50% {
+          transform: rotate(-45deg) scale(1.15);
+        }
+      }
+
+      .climax-title {
+        font-family: Georgia, serif;
+
+        font-size: clamp(3rem, 9vw, 7rem);
+
+        font-weight: 400;
+
+        letter-spacing: -3px;
+
+        background: linear-gradient(135deg, #fff, #ff9bc3);
+
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      .climax-sub {
+        margin-top: 20px;
+
+        color: rgba(255, 255, 255, 0.5);
+
+        font-size: 0.9rem;
+      }
+
+      /* =========================================================
+   FINAL
+========================================================= */
+
+      .final-content {
+        text-align: center;
+      }
+
+      .final-small {
+        font-size: 0.65rem;
+        letter-spacing: 5px;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.4);
+
+        margin-bottom: 35px;
+      }
+
+      .final-quote {
+        font-family: Georgia, serif;
+
+        font-size: clamp(2rem, 6vw, 4.5rem);
+
+        line-height: 1.25;
+
+        font-weight: 400;
+
+        color: #fff;
+      }
+
+      .final-heart {
+        display: block;
+
+        font-size: 2rem;
+
+        margin-top: 35px;
+
+        animation: heartFloat 3s ease-in-out infinite;
+      }
+
+      @keyframes heartFloat {
         0%,
         100% {
           transform: translateY(0);
         }
 
         50% {
-          transform: translateY(-7px);
+          transform: translateY(-8px);
         }
       }
 
-      /* =========================
-           LOVE BUTTON
-        ========================= */
+      .final-credit {
+        margin-top: 40px;
 
-      .heart-button {
-        position: relative;
-        width: 150px;
-        height: 150px;
-        border: none;
-        background: transparent;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: transform 0.2s;
-        -webkit-tap-highlight-color: transparent;
-      }
-
-      .heart-button:hover {
-        transform: scale(1.08);
-      }
-
-      .heart-button:active {
-        transform: scale(0.9);
-      }
-
-      .heart {
-        position: relative;
-        width: 100px;
-        height: 100px;
-        background: linear-gradient(135deg, #ff4f91, #e90055);
-        transform: rotate(-45deg);
-        border-radius: 12px;
-        box-shadow:
-          0 0 25px rgba(255, 48, 125, 0.7),
-          0 0 60px rgba(255, 48, 125, 0.35);
-        animation: heartbeat 1.2s infinite;
-      }
-
-      .heart::before,
-      .heart::after {
-        content: "";
-        position: absolute;
-        width: 100px;
-        height: 100px;
-        border-radius: 50%;
-        background: inherit;
-      }
-
-      .heart::before {
-        top: -50px;
-        left: 0;
-      }
-
-      .heart::after {
-        top: 0;
-        left: 50px;
-      }
-
-      @keyframes heartbeat {
-        0%,
-        100% {
-          transform: rotate(-45deg) scale(1);
-        }
-
-        15% {
-          transform: rotate(-45deg) scale(1.12);
-        }
-
-        30% {
-          transform: rotate(-45deg) scale(1);
-        }
-
-        45% {
-          transform: rotate(-45deg) scale(1.08);
-        }
-
-        60% {
-          transform: rotate(-45deg) scale(1);
-        }
-      }
-
-      /* =========================
-           TEXT
-        ========================= */
-
-      .message {
-        margin-top: 65px;
-        text-align: center;
-        opacity: 0;
-        transform: translateY(20px) scale(0.8);
-        pointer-events: none;
-      }
-
-      .message.show {
-        animation: messageIn 1.2s cubic-bezier(0.17, 0.67, 0.32, 1.3) forwards;
-      }
-
-      .message h1 {
-        font-size: clamp(30px, 7vw, 65px);
-        font-weight: 800;
-        letter-spacing: 2px;
-        background: linear-gradient(90deg, #fff, #ff9fc5, #fff, #ff5e9a);
-        background-size: 300%;
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        animation: textShine 4s linear infinite;
-      }
-
-      .message p {
-        margin-top: 12px;
-        font-size: 15px;
+        font-size: 0.6rem;
         letter-spacing: 4px;
-        opacity: 0.8;
+
+        text-transform: uppercase;
+
+        color: rgba(255, 255, 255, 0.25);
       }
 
-      @keyframes messageIn {
-        0% {
-          opacity: 0;
-          transform: translateY(30px) scale(0.7);
-        }
+      /* =========================================================
+   PROGRESS
+========================================================= */
 
-        60% {
-          opacity: 1;
-          transform: translateY(-8px) scale(1.05);
-        }
-
-        100% {
-          opacity: 1;
-          transform: translateY(0) scale(1);
-        }
-      }
-
-      @keyframes textShine {
-        0% {
-          background-position: 0%;
-        }
-
-        100% {
-          background-position: 300%;
-        }
-      }
-
-      /* =========================
-           FLOATING HEARTS
-        ========================= */
-
-      .floating-heart {
+      .progress {
         position: fixed;
-        bottom: -40px;
-        font-size: 20px;
-        pointer-events: none;
-        animation: floatUp linear forwards;
-        z-index: 2;
-      }
 
-      @keyframes floatUp {
-        0% {
-          transform: translateY(0) rotate(0deg) scale(0.7);
-          opacity: 0;
-        }
-
-        10% {
-          opacity: 1;
-        }
-
-        80% {
-          opacity: 0.8;
-        }
-
-        100% {
-          transform: translateY(-110vh) rotate(360deg) scale(1.4);
-          opacity: 0;
-        }
-      }
-
-      /* =========================
-           HEART EXPLOSION
-        ========================= */
-
-      .burst-heart {
-        position: fixed;
+        top: 25px;
         left: 50%;
-        top: 50%;
-        pointer-events: none;
-        font-size: 22px;
+
+        transform: translateX(-50%);
+
         z-index: 20;
-        animation: burst 1.4s ease-out forwards;
+
+        display: flex;
+        gap: 8px;
       }
 
-      @keyframes burst {
-        0% {
-          transform: translate(-50%, -50%) scale(0.2) rotate(0deg);
-          opacity: 1;
-        }
-
-        100% {
-          transform: translate(calc(-50% + var(--x)), calc(-50% + var(--y)))
-            scale(1.4) rotate(var(--rotate));
-          opacity: 0;
-        }
-      }
-
-      /* =========================
-           SPARKLES
-        ========================= */
-
-      .spark {
-        position: fixed;
+      .progress span {
         width: 6px;
         height: 6px;
-        background: white;
+
         border-radius: 50%;
-        pointer-events: none;
-        z-index: 15;
-        animation: sparkle 1s ease-out forwards;
-        box-shadow: 0 0 10px white;
+
+        background: rgba(255, 255, 255, 0.2);
+
+        transition:
+          background 0.4s ease,
+          transform 0.4s ease;
       }
 
-      @keyframes sparkle {
+      .progress span.active {
+        background: #ff639e;
+        transform: scale(1.5);
+
+        box-shadow: 0 0 10px rgba(255, 70, 140, 0.6);
+      }
+
+      /* =========================================================
+   MUSIC
+========================================================= */
+
+      .music {
+        position: fixed;
+
+        right: 25px;
+        bottom: 25px;
+
+        z-index: 30;
+
+        width: 45px;
+        height: 45px;
+
+        border-radius: 50%;
+
+        border: 1px solid rgba(255, 255, 255, 0.15);
+
+        background: rgba(255, 255, 255, 0.06);
+
+        color: #fff;
+
+        cursor: pointer;
+
+        backdrop-filter: blur(10px);
+
+        display: none;
+
+        transition:
+          transform 0.3s ease,
+          background 0.3s ease;
+      }
+
+      .music:hover {
+        transform: scale(1.1);
+
+        background: rgba(255, 70, 130, 0.15);
+      }
+
+      /* =========================================================
+   PARTICLES
+========================================================= */
+
+      .particle {
+        position: fixed;
+
+        pointer-events: none;
+
+        z-index: 10;
+
+        font-size: 14px;
+
+        animation: particleUp 2s ease-out forwards;
+      }
+
+      @keyframes particleUp {
         0% {
-          transform: scale(0);
-          opacity: 1;
+          opacity: 0;
+          transform: translateY(20px) scale(0.5);
         }
 
-        50% {
-          transform: scale(1.5);
+        20% {
           opacity: 1;
         }
 
         100% {
-          transform: translate(var(--x), var(--y)) scale(0);
           opacity: 0;
+          transform: translateY(-180px) scale(1.3) rotate(25deg);
         }
       }
 
-      /* =========================
-           CLICK MESSAGE
-        ========================= */
+      /* =========================================================
+   FADE UP
+========================================================= */
 
-      .tap-again {
-        position: fixed;
-        bottom: 7%;
-        font-size: 12px;
-        letter-spacing: 2px;
-        opacity: 0;
-        transition: 1s;
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(25px);
+        }
+
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
       }
 
-      .tap-again.show {
-        opacity: 0.6;
+      /* =========================================================
+   MOBILE
+========================================================= */
+
+      @media (max-width: 700px) {
+        .scene {
+          padding: 20px;
+        }
+
+        .intro-title {
+          letter-spacing: -3px;
+        }
+
+        .intro-sub {
+          font-size: 0.85rem;
+        }
+
+        .memory-grid {
+          grid-template-columns: 1fr;
+          gap: 12px;
+        }
+
+        .memory-card {
+          min-height: 150px;
+          padding: 25px 20px;
+        }
+
+        .memories-sub {
+          margin-bottom: 25px;
+        }
+
+        .letter-message {
+          font-size: 1rem;
+          line-height: 1.8;
+        }
+
+        .envelope-wrap {
+          transform: scale(0.85);
+        }
+
+        .final-quote {
+          font-size: 2rem;
+        }
+
+        .progress {
+          top: 18px;
+        }
+
+        .music {
+          right: 18px;
+          bottom: 18px;
+        }
       }
 
-      /* =========================
-           MUSIC BUTTON
-        ========================= */
+      /* =========================================================
+   SMALL HEIGHT
+========================================================= */
 
-      .music-button {
-        position: fixed;
-        top: 25px;
-        right: 25px;
-        width: 42px;
-        height: 42px;
-        border-radius: 50%;
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        background: rgba(255, 255, 255, 0.08);
-        color: white;
-        cursor: pointer;
-        backdrop-filter: blur(10px);
-        opacity: 0;
-        transition: 0.3s;
-        z-index: 30;
-      }
-
-      .music-button.show {
-        opacity: 1;
-      }
-
-      .music-button:hover {
-        background: rgba(255, 255, 255, 0.15);
-      }
-
-      /* =========================
-           MOBILE
-        ========================= */
-
-      @media (max-width: 600px) {
-        .hint {
-          top: 10%;
-          font-size: 11px;
-          letter-spacing: 2px;
+      @media (max-height: 650px) {
+        .intro-small {
+          margin-bottom: 15px;
         }
 
-        .heart-button {
-          width: 125px;
-          height: 125px;
+        .open-btn {
+          margin-top: 25px;
         }
 
-        .heart,
-        .heart::before,
-        .heart::after {
-          width: 82px;
-          height: 82px;
+        .letter-line {
+          margin: 20px auto;
         }
 
-        .heart::before {
-          top: -41px;
+        .letter-message {
+          font-size: 0.9rem;
         }
 
-        .heart::after {
-          left: 41px;
+        .memory-card {
+          min-height: 130px;
         }
 
-        .message {
-          margin-top: 50px;
-          padding: 0 20px;
-        }
-
-        .message p {
-          font-size: 11px;
-          letter-spacing: 2px;
+        .memory-card p {
+          font-size: 0.7rem;
         }
       }
     </style>
   </head>
 
   <body>
-    <!-- BACKGROUND -->
-    <div class="background">
-      <div class="glow"></div>
+    <!-- =======================================================
+     AMBIENT
+======================================================= -->
+
+    <div class="ambient">
+      <div id="stars"></div>
     </div>
 
-    <!-- MUSIC -->
-    <!-- Taruh file musik.mp3 di folder yang sama dengan index.html -->
+    <!-- =======================================================
+     PROGRESS
+======================================================= -->
+
+    <div class="progress" id="progress">
+      <span class="active"></span>
+      <span></span>
+      <span></span>
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+
+    <!-- =======================================================
+     MUSIC
+======================================================= -->
+
     <audio id="music" loop>
       <source src="lagu.mp3" type="audio/mpeg" />
     </audio>
 
-    <!-- MUSIC BUTTON -->
-    <button class="music-button" id="musicButton">🎵</button>
+    <button class="music" id="musicBtn">🎵</button>
 
-    <!-- MAIN -->
-    <main class="container">
-      <div class="hint" id="hint">tap the heart</div>
+    <!-- =======================================================
+     SCENE 1 — INTRO
+======================================================= -->
 
-      <button class="heart-button" id="heartButton">
-        <div class="heart"></div>
-      </button>
+    <section class="scene active" id="intro">
+      <div class="intro-content">
+        <div class="intro-small">a little something</div>
 
-      <div class="message" id="message">
-        <h1>I LOVE YOU SO MUCH ❤️</h1>
+        <h1 class="intro-title">For You.</h1>
 
-        <p>more than words can ever say</p>
+        <p class="intro-sub">I made something small... just for you.</p>
+
+        <button class="open-btn" id="openBtn">OPEN THE SURPRISE</button>
       </div>
-    </main>
+    </section>
 
-    <div class="tap-again" id="tapAgain">tap again ❤️</div>
+    <!-- =======================================================
+     SCENE 2 — ENVELOPE
+======================================================= -->
+
+    <section class="scene hidden" id="envelopeScene">
+      <div class="envelope-wrap" id="envelope">
+        <div class="letter">
+          <div class="letter-small">a letter for</div>
+
+          <h2>Alya Menyar</h2>
+
+          <p>tap to open</p>
+        </div>
+
+        <div class="envelope">
+          <div class="flap"></div>
+        </div>
+
+        <div class="envelope-label">open me</div>
+      </div>
+    </section>
+
+    <!-- =======================================================
+     SCENE 3 — LETTER
+======================================================= -->
+
+    <section class="scene hidden" id="letterScene">
+      <div class="letter-content">
+        <div class="eyebrow">the person behind this</div>
+
+        <div class="big-name">ALYA MENYAR</div>
+
+        <div class="letter-line"></div>
+
+        <p class="letter-message">
+          Some people enter your life<br />
+          and somehow make ordinary days<br />
+          feel a little more special.
+        </p>
+
+        <div class="next">there is more...</div>
+      </div>
+    </section>
+
+    <!-- =======================================================
+     SCENE 4 — MEMORIES
+======================================================= -->
+
+    <section class="scene hidden" id="memories">
+      <div class="memories-content">
+        <h2 class="memories-title">It's the little things.</h2>
+
+        <p class="memories-sub">The things that make someone unforgettable.</p>
+
+        <div class="memory-grid">
+          <div class="memory-card">
+            <div class="memory-icon">🌙</div>
+
+            <h3>Late Nights</h3>
+
+            <p>
+              Every conversation, every random thought, somehow became a memory.
+            </p>
+          </div>
+
+          <div class="memory-card">
+            <div class="memory-icon">✨</div>
+
+            <h3>Small Things</h3>
+
+            <p>
+              The little moments that probably seemed ordinary, but meant more
+              than you knew.
+            </p>
+          </div>
+
+          <div class="memory-card">
+            <div class="memory-icon">💗</div>
+
+            <h3>You</h3>
+
+            <p>
+              Maybe that's the simplest way to explain why all of this exists.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =======================================================
+     SCENE 5 — CLIMAX
+======================================================= -->
+
+    <section class="scene hidden" id="climax">
+      <div class="climax-content">
+        <div class="climax-heart"></div>
+
+        <h1 class="climax-title">I LOVE YOU.</h1>
+
+        <p class="climax-sub">Alyaa kecill lucuuuu❤️❤️❤️.</p>
+      </div>
+    </section>
+
+    <!-- =======================================================
+     SCENE 6 — FINAL
+======================================================= -->
+
+    <section class="scene hidden" id="final">
+      <div class="final-content">
+        <div class="final-small">one last thing</div>
+
+        <div class="final-quote">
+          "You are my favorite<br />
+          part of every day."
+        </div>
+
+        <span class="final-heart"> ❤️ </span>
+
+        <div class="final-credit">made with love</div>
+      </div>
+    </section>
 
     <script>
-      /* =========================
-           ELEMENTS
-        ========================= */
+      /* =========================================================
+   SCENE REFERENCES
+========================================================= */
 
-      const heartButton = document.getElementById("heartButton");
-      const message = document.getElementById("message");
-      const hint = document.getElementById("hint");
-      const tapAgain = document.getElementById("tapAgain");
+      const scenes = {
+        intro: document.getElementById("intro"),
+
+        envelope: document.getElementById("envelopeScene"),
+
+        letter: document.getElementById("letterScene"),
+
+        memories: document.getElementById("memories"),
+
+        climax: document.getElementById("climax"),
+
+        final: document.getElementById("final"),
+      };
+
+      /* =========================================================
+   ELEMENTS
+========================================================= */
+
+      const progress = document.querySelectorAll("#progress span");
+
+      const openBtn = document.getElementById("openBtn");
+
+      const envelope = document.getElementById("envelope");
 
       const music = document.getElementById("music");
-      const musicButton = document.getElementById("musicButton");
 
-      let activated = false;
+      const musicBtn = document.getElementById("musicBtn");
 
-      /* =========================
-           LOVE CLICK
-        ========================= */
+      /* =========================================================
+   STATE
+========================================================= */
 
-      heartButton.addEventListener("click", () => {
-        activated = true;
+      let currentScene = 0;
 
-        /* Hide hint */
-        hint.style.opacity = "0";
+      let musicStarted = false;
 
-        /* Show message */
-        message.classList.add("show");
+      let isTransitioning = false;
 
-        /* Show music button */
-        musicButton.classList.add("show");
+      let ignoreNextClick = false;
 
-        /* Show tap again */
-        setTimeout(() => {
-          tapAgain.classList.add("show");
-        }, 1500);
+      /* =========================================================
+   SHOW SCENE
+========================================================= */
 
-        /* Play music */
-
-        music.volume = 0.55;
-
-        music.play().catch(() => {
-          console.log("Music membutuhkan file musik.mp3");
+      function showScene(name, index) {
+        Object.values(scenes).forEach((scene) => {
+          scene.classList.add("hidden");
+          scene.classList.remove("active");
         });
 
-        /* Heart explosion */
-        createHeartExplosion();
+        progress.forEach((dot) => {
+          dot.classList.remove("active");
+        });
 
-        /* Sparkles */
-        createSparkles();
-
-        /* Screen pulse */
-        document.body.animate(
-          [
-            { transform: "scale(1)" },
-            { transform: "scale(1.02)" },
-            { transform: "scale(1)" },
-          ],
-          {
-            duration: 500,
-            easing: "ease-out",
-          },
-        );
-      });
-
-      /* =========================
-           HEART EXPLOSION
-        ========================= */
-
-      function createHeartExplosion() {
-        const hearts = ["❤️", "💗", "💖", "💕", "💓", "💘", "💝"];
-
-        for (let i = 0; i < 45; i++) {
-          const heart = document.createElement("div");
-
-          heart.className = "burst-heart";
-
-          heart.textContent = hearts[Math.floor(Math.random() * hearts.length)];
-
-          const angle = Math.random() * Math.PI * 2;
-
-          const distance = 120 + Math.random() * 400;
-
-          const x = Math.cos(angle) * distance;
-
-          const y = Math.sin(angle) * distance;
-
-          const rotate = Math.random() * 720 - 360;
-
-          heart.style.setProperty("--x", `${x}px`);
-
-          heart.style.setProperty("--y", `${y}px`);
-
-          heart.style.setProperty("--rotate", `${rotate}deg`);
-
-          heart.style.animationDuration = `${0.9 + Math.random() * 0.8}s`;
-
-          document.body.appendChild(heart);
-
-          setTimeout(() => {
-            heart.remove();
-          }, 1800);
-        }
-      }
-
-      /* =========================
-           SPARKLES
-        ========================= */
-
-      function createSparkles() {
-        for (let i = 0; i < 35; i++) {
-          const spark = document.createElement("div");
-
-          spark.className = "spark";
-
-          const angle = Math.random() * Math.PI * 2;
-
-          const distance = 100 + Math.random() * 450;
-
-          const x = Math.cos(angle) * distance;
-
-          const y = Math.sin(angle) * distance;
-
-          spark.style.left = "50%";
-          spark.style.top = "50%";
-
-          spark.style.setProperty("--x", `${x}px`);
-
-          spark.style.setProperty("--y", `${y}px`);
-
-          spark.style.animationDelay = `${Math.random() * 0.3}s`;
-
-          document.body.appendChild(spark);
-
-          setTimeout(() => {
-            spark.remove();
-          }, 1500);
-        }
-      }
-
-      /* =========================
-           FLOATING HEARTS
-        ========================= */
-
-      function createFloatingHeart() {
-        const heart = document.createElement("div");
-
-        heart.className = "floating-heart";
-
-        const hearts = ["❤️", "💕", "💗", "💖", "💓", "💘"];
-
-        heart.textContent = hearts[Math.floor(Math.random() * hearts.length)];
-
-        heart.style.left = Math.random() * 100 + "vw";
-
-        heart.style.fontSize = 12 + Math.random() * 25 + "px";
-
-        heart.style.animationDuration = 5 + Math.random() * 7 + "s";
-
-        document.body.appendChild(heart);
+        scenes[name].classList.remove("hidden");
 
         setTimeout(() => {
-          heart.remove();
-        }, 13000);
+          scenes[name].classList.add("active");
+        }, 50);
+
+        if (progress[index]) {
+          progress[index].classList.add("active");
+        }
+
+        currentScene = index;
       }
 
-      /* Generate hearts continuously */
+      /* =========================================================
+   MUSIC
+========================================================= */
 
-      setInterval(() => {
-        createFloatingHeart();
-      }, 700);
+      function startMusic() {
+        if (musicStarted) return;
 
-      /* =========================
-           MUSIC CONTROL
-        ========================= */
+        music.volume = 0.5;
 
-      musicButton.addEventListener("click", () => {
+        music
+          .play()
+          .then(() => {
+            musicStarted = true;
+
+            musicBtn.style.display = "block";
+          })
+          .catch(() => {
+            musicBtn.style.display = "block";
+          });
+      }
+
+      /* =========================================================
+   MUSIC BUTTON
+========================================================= */
+
+      musicBtn.addEventListener("click", (event) => {
+        event.stopPropagation();
+
         if (music.paused) {
           music.play();
 
-          musicButton.textContent = "🎵";
+          musicBtn.textContent = "🎵";
         } else {
           music.pause();
 
-          musicButton.textContent = "🔇";
+          musicBtn.textContent = "🔇";
         }
       });
 
-      /* =========================
-           EXTRA CLICK EFFECT
-        ========================= */
+      /* =========================================================
+   PARTICLES
+========================================================= */
 
-      document.addEventListener("click", (event) => {
-        if (!activated) return;
+      function createParticles(amount = 15) {
+        const symbols = ["❤️", "💗", "✨", "♡", "✦"];
 
-        for (let i = 0; i < 5; i++) {
-          const spark = document.createElement("div");
+        for (let i = 0; i < amount; i++) {
+          const particle = document.createElement("div");
 
-          spark.className = "spark";
+          particle.className = "particle";
 
-          spark.style.left = event.clientX + "px";
+          particle.textContent =
+            symbols[Math.floor(Math.random() * symbols.length)];
 
-          spark.style.top = event.clientY + "px";
+          particle.style.left = Math.random() * 100 + "vw";
 
-          const x = Math.random() * 100 - 50;
+          particle.style.top = 55 + Math.random() * 30 + "vh";
 
-          const y = Math.random() * 100 - 50;
+          particle.style.animationDelay = Math.random() * 0.5 + "s";
 
-          spark.style.setProperty("--x", `${x}px`);
-
-          spark.style.setProperty("--y", `${y}px`);
-
-          document.body.appendChild(spark);
+          document.body.appendChild(particle);
 
           setTimeout(() => {
-            spark.remove();
-          }, 1000);
+            particle.remove();
+          }, 2200);
+        }
+      }
+
+      /* =========================================================
+   NEXT SCENE
+========================================================= */
+
+      function goNext() {
+        if (isTransitioning) return;
+
+        /* -----------------------------------------------------
+       INTRO → ENVELOPE
+    ----------------------------------------------------- */
+
+        if (currentScene === 0) {
+          isTransitioning = true;
+
+          startMusic();
+
+          createParticles(20);
+
+          setTimeout(() => {
+            showScene("envelope", 1);
+
+            isTransitioning = false;
+          }, 700);
+
+          return;
+        }
+
+        /* -----------------------------------------------------
+       ENVELOPE → LETTER
+    ----------------------------------------------------- */
+
+        if (currentScene === 1) {
+          if (!envelope.classList.contains("open")) {
+            isTransitioning = true;
+
+            envelope.classList.add("open");
+
+            createParticles(12);
+
+            setTimeout(() => {
+              showScene("letter", 2);
+
+              isTransitioning = false;
+            }, 1500);
+          } else {
+            showScene("letter", 2);
+          }
+
+          return;
+        }
+
+        /* -----------------------------------------------------
+       LETTER → MEMORIES
+    ----------------------------------------------------- */
+
+        if (currentScene === 2) {
+          isTransitioning = true;
+
+          setTimeout(() => {
+            showScene("memories", 3);
+
+            isTransitioning = false;
+          }, 400);
+
+          return;
+        }
+
+        /* -----------------------------------------------------
+       MEMORIES → CLIMAX
+    ----------------------------------------------------- */
+
+        if (currentScene === 3) {
+          isTransitioning = true;
+
+          createParticles(25);
+
+          setTimeout(() => {
+            showScene("climax", 4);
+
+            isTransitioning = false;
+          }, 700);
+
+          return;
+        }
+
+        /* -----------------------------------------------------
+       CLIMAX → FINAL
+    ----------------------------------------------------- */
+
+        if (currentScene === 4) {
+          isTransitioning = true;
+
+          createParticles(35);
+
+          setTimeout(() => {
+            showScene("final", 5);
+
+            isTransitioning = false;
+          }, 900);
+
+          return;
+        }
+
+        /* -----------------------------------------------------
+       FINAL
+    ----------------------------------------------------- */
+
+        if (currentScene === 5) {
+          createParticles(20);
+
+          return;
+        }
+      }
+
+      /* =========================================================
+   PREVIOUS SCENE
+========================================================= */
+
+      function goPrevious() {
+        if (isTransitioning) return;
+
+        /* FINAL → CLIMAX */
+
+        if (currentScene === 5) {
+          showScene("climax", 4);
+
+          return;
+        }
+
+        /* CLIMAX → MEMORIES */
+
+        if (currentScene === 4) {
+          showScene("memories", 3);
+
+          return;
+        }
+
+        /* MEMORIES → LETTER */
+
+        if (currentScene === 3) {
+          showScene("letter", 2);
+
+          return;
+        }
+
+        /* LETTER → ENVELOPE */
+
+        if (currentScene === 2) {
+          showScene("envelope", 1);
+
+          return;
+        }
+
+        /* ENVELOPE → INTRO */
+
+        if (currentScene === 1) {
+          envelope.classList.remove("open");
+
+          showScene("intro", 0);
+
+          return;
+        }
+      }
+
+      /* =========================================================
+   OPEN BUTTON
+========================================================= */
+
+      openBtn.addEventListener("click", (event) => {
+        event.stopPropagation();
+
+        goNext();
+      });
+
+      /* =========================================================
+   ENVELOPE CLICK
+========================================================= */
+
+      envelope.addEventListener("click", (event) => {
+        event.stopPropagation();
+
+        goNext();
+      });
+
+      /* =========================================================
+   SCENE CLICK NAVIGATION
+========================================================= */
+
+      /*
+   LEFT 30%  = BACK
+   RIGHT 30% = NEXT
+
+   MIDDLE AREA = NOTHING
+
+   This prevents accidental navigation
+   when interacting with the content.
+*/
+
+      function handleSceneClick(event) {
+        /*
+       Ignore synthetic click generated
+       after a swipe.
+    */
+
+        if (ignoreNextClick) {
+          ignoreNextClick = false;
+
+          return;
+        }
+
+        /*
+       Ignore buttons.
+    */
+
+        if (event.target.closest("button")) {
+          return;
+        }
+
+        /*
+       Ignore envelope.
+    */
+
+        if (event.target.closest(".envelope-wrap")) {
+          return;
+        }
+
+        /*
+       LEFT SIDE
+    */
+
+        if (event.clientX < window.innerWidth * 0.3) {
+          goPrevious();
+
+          return;
+        }
+
+        /*
+       RIGHT SIDE
+    */
+
+        if (event.clientX > window.innerWidth * 0.7) {
+          goNext();
+
+          return;
+        }
+      }
+
+      scenes.letter.addEventListener("click", handleSceneClick);
+
+      scenes.memories.addEventListener("click", handleSceneClick);
+
+      scenes.climax.addEventListener("click", handleSceneClick);
+
+      scenes.final.addEventListener("click", handleSceneClick);
+
+      /* =========================================================
+   SWIPE NAVIGATION
+========================================================= */
+
+      let touchStartX = 0;
+
+      let touchStartY = 0;
+
+      let touchStartTime = 0;
+
+      document.addEventListener(
+        "touchstart",
+        (event) => {
+          if (!event.touches.length) return;
+
+          touchStartX = event.touches[0].clientX;
+
+          touchStartY = event.touches[0].clientY;
+
+          touchStartTime = Date.now();
+        },
+        {
+          passive: true,
+        },
+      );
+
+      document.addEventListener(
+        "touchend",
+        (event) => {
+          if (!event.changedTouches.length) return;
+
+          const touchEndX = event.changedTouches[0].clientX;
+
+          const touchEndY = event.changedTouches[0].clientY;
+
+          const dx = touchEndX - touchStartX;
+
+          const dy = touchEndY - touchStartY;
+
+          const duration = Date.now() - touchStartTime;
+
+          /*
+           Too small = not a swipe.
+        */
+
+          if (Math.abs(dx) < 60) {
+            return;
+          }
+
+          /*
+           Vertical movement bigger
+           = scrolling gesture.
+        */
+
+          if (Math.abs(dx) <= Math.abs(dy)) {
+            return;
+          }
+
+          /*
+           Ignore very slow gestures.
+        */
+
+          if (duration > 800) {
+            return;
+          }
+
+          /*
+           Prevent the browser's
+           synthetic click after swipe
+           from triggering NEXT.
+        */
+
+          ignoreNextClick = true;
+
+          /*
+           SWIPE LEFT = NEXT
+        */
+
+          if (dx < 0) {
+            goNext();
+          } else {
+            /*
+           SWIPE RIGHT = BACK
+        */
+            goPrevious();
+          }
+
+          /*
+           Release click lock.
+        */
+
+          setTimeout(() => {
+            ignoreNextClick = false;
+          }, 500);
+        },
+        {
+          passive: true,
+        },
+      );
+
+      /* =========================================================
+   KEYBOARD NAVIGATION
+========================================================= */
+
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "ArrowRight") {
+          goNext();
+        }
+
+        if (event.key === "ArrowLeft") {
+          goPrevious();
+        }
+      });
+
+      /* =========================================================
+   CREATE STARS
+========================================================= */
+
+      function createStars() {
+        const stars = document.getElementById("stars");
+
+        for (let i = 0; i < 100; i++) {
+          const star = document.createElement("div");
+
+          star.className = "star";
+
+          star.style.left = Math.random() * 100 + "%";
+
+          star.style.top = Math.random() * 100 + "%";
+
+          const size = Math.random() * 2 + 1;
+
+          star.style.width = size + "px";
+
+          star.style.height = size + "px";
+
+          star.style.animationDelay = Math.random() * 4 + "s";
+
+          stars.appendChild(star);
+        }
+      }
+
+      createStars();
+
+      /* =========================================================
+   BACKGROUND CLICK PARTICLES
+========================================================= */
+
+      document.addEventListener("click", (event) => {
+        if (
+          event.target.closest("button") ||
+          event.target.closest(".envelope-wrap")
+        ) {
+          return;
+        }
+
+        /*
+           Small ambient particles
+           on normal clicks.
+        */
+
+        if (Math.random() > 0.5) {
+          const particle = document.createElement("div");
+
+          particle.className = "particle";
+
+          particle.textContent = "♡";
+
+          particle.style.left = event.clientX + "px";
+
+          particle.style.top = event.clientY + "px";
+
+          document.body.appendChild(particle);
+
+          setTimeout(() => {
+            particle.remove();
+          }, 2000);
         }
       });
     </script>
   </body>
 </html>
-```
